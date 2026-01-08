@@ -8,9 +8,11 @@ namespace Asteroids_Final_game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
+        MouseState mouseState;
         Texture2D shipTexture;
         Ship ship;
+
+        Rectangle window;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -21,7 +23,9 @@ namespace Asteroids_Final_game
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            window = new Rectangle(0, 0, 800, 500);
+            _graphics.PreferredBackBufferWidth = window.Width;
+            _graphics.PreferredBackBufferHeight = window.Height;
             base.Initialize();
             ship = new Ship(shipTexture);
         }
@@ -37,7 +41,8 @@ namespace Asteroids_Final_game
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            mouseState = Mouse.GetState();
+            ship.Update(window, mouseState);
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -45,8 +50,10 @@ namespace Asteroids_Final_game
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            GraphicsDevice.Clear(Color.Black);
+            _spriteBatch.Begin();
+            ship.Draw(_spriteBatch);
+            _spriteBatch.End();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
