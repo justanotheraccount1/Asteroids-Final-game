@@ -19,17 +19,19 @@ namespace Asteroids_Final_game
         private float _angle;
         private Vector2 _position;
         private Vector2 _direction;
+        private Vector2 _momentum;
 
         public Ship(Texture2D texture)
         {
             _texture = texture;
             _speed = Vector2.Zero;
-            _acceleration = 0.04f;
-            _drag = -0.01f;
+            _acceleration = 0.0004f;
+            _drag = -0.02f;
             _angle = 0;
             _position = new Vector2(375, 225);
             _rectangle = new Rectangle(_position.ToPoint(), new Point(50, 50));
             _direction = Vector2.Zero;
+            _momentum = Vector2.Zero;
         }
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -42,28 +44,28 @@ namespace Asteroids_Final_game
             if (_direction != Vector2.Zero )
             {
                 _direction.Normalize();
-                _position.X += _direction.X * _speed.X;
-                _position.Y += _direction.Y * _speed.Y;
+                _position.X += _momentum.X * _speed.X;
+                _position.Y += _momentum.Y * _speed.Y;
                 _rectangle.Location = _position.ToPoint();
             }
             
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
+                _momentum = mouseState.Position.ToVector2() - _rectangle.Center.ToVector2();
                 _speed.X += _acceleration;
                 _speed.Y += _acceleration;
             }
-            if(mouseState.LeftButton == ButtonState.Released)
+            if (mouseState.LeftButton == ButtonState.Released)
             {
                 if (_speed.X > 0)
                 {
-                    _speed.X += _drag;
+                    _speed.X -= _acceleration;
                 }
                 if (_speed.Y > 0)
                 {
-                    _speed.Y += _drag;
+                    _speed.Y -= _acceleration;
                 }
-                
-                
+
             }
 
         }
