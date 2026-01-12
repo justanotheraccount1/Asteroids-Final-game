@@ -28,8 +28,8 @@ namespace Asteroids_Final_game
             _acceleration = 0.0004f;
             _drag = -0.02f;
             _angle = 0;
-            _position = new Vector2(375, 225);
-            _rectangle = new Rectangle(_position.ToPoint(), new Point(50, 50));
+            _position = new Vector2(390, 240);
+            _rectangle = new Rectangle(_position.ToPoint(), new Point(20, 20));
             _direction = Vector2.Zero;
             _momentum = Vector2.Zero;
         }
@@ -68,6 +68,10 @@ namespace Asteroids_Final_game
 
             }
 
+        }
+        public Rectangle Rect
+        {
+            get { return _rectangle; }
         }
     }
 }

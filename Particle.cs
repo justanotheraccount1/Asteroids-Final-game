@@ -20,16 +20,16 @@ namespace Asteroids_Final_game
         private float _size;
         public int _lifespan;
 
-        public Particle(Texture2D texture, Vector2 position, Vector2 velocity, float angle, float angularVelocity, float size)
+        public Particle(Texture2D texture, Vector2 position, Vector2 velocity, float angle, float angularVelocity, float size, Color color)
         {
             _texture = texture;
             _position = position;
             _velocity = velocity;
             _angle = angle;
             _angularVelocity = angularVelocity;
-            _color = Color.Orange;
+            _color = color;
             _size = size;
-            _lifespan = 2000;
+            _lifespan = 20;
         }
 
         public void Update()
@@ -44,6 +44,10 @@ namespace Asteroids_Final_game
             Vector2 origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
 
             spriteBatch.Draw(_texture, _position, sourceRectangle, _color, _angle, origin, _size, SpriteEffects.None, 0f);
+        }
+        public int Lifespan
+        {
+            get { return _lifespan; }
         }
     }
 }

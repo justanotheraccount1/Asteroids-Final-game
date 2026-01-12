@@ -9,8 +9,9 @@ namespace Asteroids_Final_game
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         MouseState mouseState;
-        Texture2D shipTexture;
+        Texture2D shipTexture, smokeTexture;
         Ship ship;
+        ParticleSystem particleSystem;
 
         Rectangle window;
         public Game1()
@@ -28,12 +29,14 @@ namespace Asteroids_Final_game
             _graphics.PreferredBackBufferHeight = window.Height;
             base.Initialize();
             ship = new Ship(shipTexture);
+            particleSystem = new ParticleSystem(smokeTexture, new Vector2(400, 240));
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             shipTexture = Content.Load<Texture2D>("Images/ship");
+            smokeTexture = Content.Load<Texture2D>("Images/smokePuff");
             // TODO: use this.Content to load your game content here
         }
 
@@ -42,7 +45,16 @@ namespace Asteroids_Final_game
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             mouseState = Mouse.GetState();
-            ship.Update(window, mouseState);
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                particleSystem.EmitterLocation = new Vector2(ship.Rect.X + (ship.Rect.Width / 2), ship.Rect.Y + (ship.Rect.Height / 2));
+                particleSystem.Enabled = true;
+            }
+            else
+                particleSystem.Enabled = false;
+
+                ship.Update(window, mouseState);
+            particleSystem.Update();
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -52,7 +64,9 @@ namespace Asteroids_Final_game
         {
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
+            particleSystem.Draw(_spriteBatch);
             ship.Draw(_spriteBatch);
+            
             _spriteBatch.End();
             // TODO: Add your drawing code here
 
