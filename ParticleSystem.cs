@@ -15,6 +15,7 @@ namespace Asteroids_Final_game
         private List<Particle> particles;
         private Texture2D _texture;
         private bool _enabled;
+        private Color color;
 
 
         public ParticleSystem(Texture2D texture, Vector2 location)
@@ -27,23 +28,31 @@ namespace Asteroids_Final_game
         }
         private Particle GenerateNewParticle()
         {
-            //if (_generator.Next(3) == 0)
-            //{
-            //    Color color = Color.White;
-            //}
-            //else if (_generator.Next(3) == 1)
-            //{
-            //    Color color = Color.Yellow;
-            //}
-            //else if (_generator.Next(3) == 1)
-            //{
-            //    Color color = Color.Orange;
-            //}
-            //else
-            //{
-            //    Color color = Color.Red;
+            if (_generator.Next(5) == 0)
+            {
+                color = Color.DarkSlateGray;
+            }
+            else if (_generator.Next(5) == 1)
+            {
+                color = Color.MonoGameOrange;
+            }
+            else if (_generator.Next(5) == 2)
+            {
+                color = Color.MonoGameOrange;
+            }
+            else if (_generator.Next(5) == 3)
+            {
+                color = Color.Orange;
+            }
+            else if (_generator.Next(5) == 4)
+            {
+                color = Color.Red;
+            }
+            else
+            {
+                color = Color.Yellow;
 
-            //}
+            }
             Vector2 _position = _emitterLocation;
             Vector2 _velocity = new Vector2(
                     1f * (float)(_generator.NextDouble() * 2 - 1),
@@ -56,7 +65,7 @@ namespace Asteroids_Final_game
         }
         public void Update()
         {
-            int total = 10;
+            int total = 15;
 
             if (_enabled) 
                 for (int i = 0; i < total; i++)

@@ -25,8 +25,8 @@ namespace Asteroids_Final_game
         {
             _texture = texture;
             _speed = Vector2.Zero;
-            _acceleration = 0.0004f;
-            _drag = -0.02f;
+            _acceleration = 0.0002f;
+            _drag = -0.04f;
             _angle = 0;
             _position = new Vector2(390, 240);
             _rectangle = new Rectangle(_position.ToPoint(), new Point(20, 20));
@@ -54,6 +54,7 @@ namespace Asteroids_Final_game
                 _momentum = mouseState.Position.ToVector2() - _rectangle.Center.ToVector2();
                 _speed.X += _acceleration;
                 _speed.Y += _acceleration;
+
             }
             if (mouseState.LeftButton == ButtonState.Released)
             {
