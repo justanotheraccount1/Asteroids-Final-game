@@ -9,7 +9,7 @@ namespace Asteroids_Final_game
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         MouseState mouseState;
-        Texture2D shipTexture, smokeTexture;
+        Texture2D shipTexture, smokeTexture, asteroidTexture;
         Ship ship;
         ParticleSystem particleSystem;
 
@@ -37,6 +37,7 @@ namespace Asteroids_Final_game
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             shipTexture = Content.Load<Texture2D>("Images/ship");
             smokeTexture = Content.Load<Texture2D>("Images/smokePuff");
+            asteroidTexture = Content.Load<Texture2D>("Images/spaceRock");
             // TODO: use this.Content to load your game content here
         }
 
@@ -53,7 +54,7 @@ namespace Asteroids_Final_game
             else
                 particleSystem.Enabled = false;
 
-                ship.Update(window, mouseState);
+                ship.Update(window, mouseState, gameTime);
             particleSystem.Update();
             // TODO: Add your update logic here
 
