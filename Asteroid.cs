@@ -30,7 +30,33 @@ namespace Asteroids_Final_game
         {
             _location.X += (int)_speed.X;
             _location.Y += (int)_speed.Y;
-            
+            if (_location.X <= bounds.X)
+            {
+                _location.X = bounds.X;
+                _speed.X *= -1;
+            }
+            if (_location.Right >= bounds.Right)
+            {
+                _location.X = bounds.Right - _location.Width;
+                _speed.X *= -1;
+
+            }
+            if (_location.Y <= bounds.Y)
+            {
+                _location.Y = bounds.Y;
+                _speed.Y *= -1;
+
+            }
+            if (_location.Bottom >= bounds.Bottom)
+            {
+                _location.Y = bounds.Bottom - _location.Height;
+                _speed.Y *= -1;
+
+            }
+        }
+        public Rectangle Rect
+        {
+            get { return _location; }
         }
     }
 }
