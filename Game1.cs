@@ -129,7 +129,10 @@ namespace Asteroids_Final_game
 
             if (screen == Screen.Title)
             {
-                if
+                if (keyboardState.IsKeyDown(Keys.Enter))
+                {
+                    screen = Screen.Game;
+                }
             }
             if (screen == Screen.Game)
             {
@@ -195,21 +198,28 @@ namespace Asteroids_Final_game
 
             _spriteBatch.Begin(transformMatrix: scaleMatrix);
 
+            if (screen == Screen.Title)
+            {
 
-            particleSystem.Draw(_spriteBatch);
-            for(int i = 0; i < lasers.Count; i++)
-            {
-                lasers[i].Draw(_spriteBatch);
             }
-            for (int i = 0; i < boomRects.Count; i++)
+            if (screen == Screen.Game)
             {
-                _spriteBatch.Draw(boomTexture, boomRects[i], Color.White * fades[i]);
+                particleSystem.Draw(_spriteBatch);
+                for (int i = 0; i < lasers.Count; i++)
+                {
+                    lasers[i].Draw(_spriteBatch);
+                }
+                for (int i = 0; i < boomRects.Count; i++)
+                {
+                    _spriteBatch.Draw(boomTexture, boomRects[i], Color.White * fades[i]);
+                }
+                ship.Draw(_spriteBatch);
+                for (int i = 0; i < asteroids.Count; i++)
+                {
+                    asteroids[i].Draw(_spriteBatch);
+                }
             }
-            ship.Draw(_spriteBatch);
-            for(int i = 0; i < asteroids.Count; i++)
-            {
-                asteroids[i].Draw(_spriteBatch);
-            }
+            
             
             _spriteBatch.End();
 
