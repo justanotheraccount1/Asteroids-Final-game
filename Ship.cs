@@ -39,10 +39,10 @@ namespace Asteroids_Final_game
         {
             spriteBatch.Draw(_texture, new Rectangle(_rectangle.Center, _rectangle.Size), null, Color.White, _angle + ((float)Math.PI / 2), new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
         }
-        public void Update(Rectangle window, MouseState mouseState, GameTime gameTime)
+        public void Update(Rectangle window, MouseState mouseState, GameTime gameTime, Vector2 mousePos)
         {
             
-            _direction = mouseState.Position.ToVector2() - _rectangle.Center.ToVector2();
+            _direction = mousePos - _rectangle.Center.ToVector2();
             _angle = (float)Math.Atan2(_direction.Y, _direction.X);
             if (_direction != Vector2.Zero )
             {
@@ -55,7 +55,7 @@ namespace Asteroids_Final_game
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
                 _dragSeconds = 0f;
-                _momentum = mouseState.Position.ToVector2() - _rectangle.Center.ToVector2();
+                _momentum = mousePos - _rectangle.Center.ToVector2();
                 if (_speed.X < 0.02)
                     _speed.X += _acceleration;
                 if (_speed.Y < 0.02)

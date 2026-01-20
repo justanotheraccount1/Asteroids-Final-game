@@ -23,16 +23,23 @@ namespace Asteroids_Final_game
             _texture = texture;
             _location = location;
             _direction = target - location;
+            _direction.Normalize();
             _rectangle = new Rectangle(location.ToPoint(), new Point(_size, _size));
+            _speed = 8f;
 
         }
         public void Update()
         {
-
+            _location += _direction * _speed;
+            _rectangle.Location = _location.ToPoint();
         }
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _rectangle, Color.White);
+        }
+        public bool Intersects(Rectangle asteroid)
+        {
+            return _rectangle.Intersects(asteroid);
         }
     }
 }
