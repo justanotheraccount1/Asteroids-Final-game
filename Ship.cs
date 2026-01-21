@@ -100,5 +100,9 @@ namespace Asteroids_Final_game
         {
             get { return _rectangle; }
         }
+        public bool Intersects(Rectangle asteroid)
+        {
+            return _rectangle.Intersects(asteroid);
+        }
     }
 }

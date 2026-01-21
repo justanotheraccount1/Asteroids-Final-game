@@ -58,5 +58,9 @@ namespace Asteroids_Final_game
         {
             get { return _location; }
         }
+        public Vector2 Speed
+        {
+            get { return _speed; }
+        }
     }
 }

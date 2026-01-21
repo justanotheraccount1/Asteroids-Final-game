@@ -12,6 +12,7 @@ namespace Asteroids_Final_game
         Title,
         Game,
         Options,
+        Win,
         Lose
     }
     public class Game1 : Game
@@ -20,7 +21,7 @@ namespace Asteroids_Final_game
         private SpriteBatch _spriteBatch;
         MouseState mouseState, prevMouseState;
         KeyboardState keyboardState;
-        Texture2D shipTexture, smokeTexture, asteroidTexture, laserTexture, boomTexture;
+        Texture2D shipTexture, smokeTexture, asteroidTexture, laserTexture, boomTexture, titleScreen, winScreen, loseScreen;
         Ship ship;
         ParticleSystem particleSystem;
         List<Asteroid> asteroids = new List<Asteroid>();
@@ -37,6 +38,9 @@ namespace Asteroids_Final_game
         float _scale;
         Vector2 _screenOffset;
         Screen screen;
+        Vector2 scale;
+        int score = 0;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -54,7 +58,7 @@ namespace Asteroids_Final_game
             _graphics.PreferredBackBufferWidth = window.Width;
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
-            bounds = new Rectangle(-100, -100, 1000, 700);
+            bounds = new Rectangle(-100, -100, window.Width + (window.Width/ 10), window.Height + (window.Height / 10));
             virtualWidth = 800;
             virtualHeight = 500;
             virtualRect = new Rectangle(0, 0, 800, 500);
@@ -62,15 +66,18 @@ namespace Asteroids_Final_game
             actualHeight = (float)GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             scaleX = actualWidth / virtualWidth;
             scaleY = actualHeight / virtualHeight;
-            _scale = Math.Min(scaleX, scaleY);
+            scale = new Vector2(scaleX, scaleY);
+            //_scale = Math.Min(scaleX, scaleY);
 
 
-            float viewportWidth = virtualWidth * _scale;
-            float viewportHeight = virtualHeight * _scale;
+            float viewportWidth = virtualWidth * scaleX;
+            float viewportHeight = virtualHeight * scaleY;
             this.Window.Title = $"{actualHeight} {actualWidth}";
 
-            _screenOffset = new Vector2((actualWidth - viewportWidth) / 2f,(actualHeight - viewportHeight) / 2f);
-            scaleMatrix = Matrix.CreateTranslation(new Vector3(_screenOffset, 0)) * Matrix.CreateScale(_scale, _scale, 1f);
+            //_screenOffset = new Vector2((actualWidth - viewportWidth) / 2f,(actualHeight - viewportHeight) / 2f);
+
+            scaleMatrix = Matrix.CreateScale(scaleX, scaleY, 1.0f);
+            //scaleMatrix = Matrix.CreateTranslation(new Vector3(_screenOffset, 0)) * Matrix.CreateScale(_scale, _scale, 1f);
 
 
             base.Initialize();
@@ -78,16 +85,16 @@ namespace Asteroids_Final_game
             particleSystem = new ParticleSystem(smokeTexture, new Vector2(400, 240));
             while(!done)
             {
-                asteroids.Add(new Asteroid(asteroidTexture, new Rectangle(generator.Next(-100, 900), generator.Next(-100, 600), 20, 20), new Vector2(generator.Next(-2, 3), generator.Next(-2, 3))));
+                asteroids.Add(new Asteroid(asteroidTexture, new Rectangle(generator.Next(bounds.X, bounds.Width), generator.Next(bounds.Y, bounds.Height), 20, 20), new Vector2(generator.Next(-2, 3), generator.Next(-2, 3))));
                 for (int i = 0; i < asteroids.Count; i++)
                 {
-                    if (window.Contains(asteroids[i].Rect))
+                    if (window.Contains(asteroids[i].Rect) || asteroids[i].Speed == Vector2.Zero)
                     {
                         asteroids.RemoveAt(i);
                         i--;
                     }
                 }
-                if (asteroids.Count > 50)
+                if (asteroids.Count > 100)
                 {
                     done = true;
                 }
@@ -102,6 +109,7 @@ namespace Asteroids_Final_game
             asteroidTexture = Content.Load<Texture2D>("Images/spaceRock");
             laserTexture = Content.Load<Texture2D>("Images/energyBall");
             boomTexture = Content.Load<Texture2D>("Images/boom");
+            titleScreen = Content.Load<Texture2D>("Images/asteroidsTitle");
             // TODO: use this.Content to load your game content here
         }
 
@@ -118,10 +126,10 @@ namespace Asteroids_Final_game
                 Vector2 screenPos = new Vector2(mouse.X, mouse.Y);
 
                 // Remove letterbox offset
-                screenPos -= _screenOffset;
+                //screenPos -= _screenOffset;
 
                 // Un-scale
-                screenPos /= _scale;
+                screenPos /= scale;
 
                 return screenPos;
             }
@@ -129,7 +137,7 @@ namespace Asteroids_Final_game
 
             if (screen == Screen.Title)
             {
-                if (keyboardState.IsKeyDown(Keys.Enter))
+                if (keyboardState.IsKeyDown(Keys.Space))
                 {
                     screen = Screen.Game;
                 }
@@ -148,19 +156,25 @@ namespace Asteroids_Final_game
                     lasers.Add(new Laser(laserTexture, ship.Rect.Center.ToVector2(), mousePos, 10));
                 }
 
-                for (int i = 1; i < lasers.Count; i++)
+                for (int i = 0; i < lasers.Count; i++)
                 {
+                    bool removeLaser = false;
                     for (int j = 0; j < asteroids.Count; j++)
                     {
                         if (lasers[i].Intersects(asteroids[j].Rect))
                         {
-                            lasers.RemoveAt(i);
+                            removeLaser = true;
                             boomRects.Add(asteroids[j].Rect);
                             fades.Add(1f);
                             asteroids.RemoveAt(j);
-                            i--;
                             j--;
+                            score++;
                         }
+                    }
+                    if (removeLaser)
+                    {
+                        lasers.RemoveAt(i);
+                        i--;
                     }
                 }
                 for (int i = 0; i < fades.Count; i++)
@@ -180,9 +194,23 @@ namespace Asteroids_Final_game
                 for (int j = 0; j < asteroids.Count; j++)
                 {
                     asteroids[j].Update(bounds);
+                    if (ship.Intersects(asteroids[j].Rect))
+                    {
+                        screen = Screen.Lose;
+                    }
                 }
                 ship.Update(virtualRect, mouseState, gameTime, mousePos);
                 particleSystem.Update();
+                for (int i = 0; i < asteroids.Count; i++)
+                {
+                    if (asteroids.Count == 0 || asteroids.Count < 10 && !virtualRect.Contains(asteroids[i].Rect) || score >= 85)
+                    {
+                        screen = Screen.Win;
+                    }
+                }
+
+
+
             }
 
             
@@ -200,7 +228,7 @@ namespace Asteroids_Final_game
 
             if (screen == Screen.Title)
             {
-
+                _spriteBatch.Draw(titleScreen, virtualRect, Color.White);
             }
             if (screen == Screen.Game)
             {
@@ -224,9 +252,9 @@ namespace Asteroids_Final_game
             _spriteBatch.End();
 
 
-            Vector2 screenMousePos = new Vector2(mouseState.X, mouseState.Y);
-            Matrix invertMatrix = Matrix.Invert(scaleMatrix);
-            Vector2 virtualMousePos = Vector2.Transform(screenMousePos, invertMatrix);
+            //Vector2 screenMousePos = new Vector2(mouseState.X, mouseState.Y);
+            //Matrix invertMatrix = Matrix.Invert(scaleMatrix);
+            //Vector2 virtualMousePos = Vector2.Transform(screenMousePos, invertMatrix);
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
