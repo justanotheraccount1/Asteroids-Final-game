@@ -13,6 +13,16 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Fonts/8BitFont.ttf
+/copy:Fonts/8BitFont.ttf
+
+#begin Fonts/TextFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/TextFont.spritefont
+
 #begin Images/asteroidsTitle.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -49,6 +59,18 @@
 /processorParam:TextureFormat=Color
 /build:Images/energyBall.png
 
+#begin Images/optionsTab.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/optionsTab.png
+
 #begin Images/ship.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -84,4 +106,34 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Images/spaceRock.png
+
+#begin Sounds/explodeSound.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/explodeSound.mp3
+
+#begin Sounds/introMusic.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/introMusic.mp3
+
+#begin Sounds/loseSound.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/loseSound.mp3
+
+#begin Sounds/mainMusic.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/mainMusic.mp3
+
+#begin Sounds/winSound.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/winSound.mp3
 

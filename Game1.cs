@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -21,12 +22,12 @@ namespace Asteroids_Final_game
         private SpriteBatch _spriteBatch;
         MouseState mouseState, prevMouseState;
         KeyboardState keyboardState;
-        Texture2D shipTexture, smokeTexture, asteroidTexture, laserTexture, boomTexture, titleScreen, winScreen, loseScreen;
+        Texture2D shipTexture, smokeTexture, asteroidTexture, laserTexture, boomTexture, titleScreen, winScreen, loseScreen, optionsTexture;
         Ship ship;
         ParticleSystem particleSystem;
         List<Asteroid> asteroids = new List<Asteroid>();
         Random generator = new Random();
-        Rectangle window, bounds, virtualRect;
+        Rectangle window, bounds, virtualRect, optionsRect;
         bool done = false;
         List<Laser> lasers = new List<Laser>();
         List<Rectangle> boomRects = new List<Rectangle>();
@@ -40,7 +41,9 @@ namespace Asteroids_Final_game
         Screen screen;
         Vector2 scale;
         int score = 0;
-
+        SpriteFont textFont;
+        SoundEffect introSound, gameSound, winSound, loseSound, explodeSound;
+        SoundEffectInstance introSoundInstance, gameSoundInstance, winSoundInstance, loseSoundInstance, explodeSoundInstance;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -62,6 +65,7 @@ namespace Asteroids_Final_game
             virtualWidth = 800;
             virtualHeight = 500;
             virtualRect = new Rectangle(0, 0, 800, 500);
+            optionsRect = new Rectangle(10, 10, 30, 30);
             actualWidth = (float)GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             actualHeight = (float)GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             scaleX = actualWidth / virtualWidth;
@@ -109,7 +113,22 @@ namespace Asteroids_Final_game
             asteroidTexture = Content.Load<Texture2D>("Images/spaceRock");
             laserTexture = Content.Load<Texture2D>("Images/energyBall");
             boomTexture = Content.Load<Texture2D>("Images/boom");
+            optionsTexture = Content.Load<Texture2D>("Images/optionsTab");
             titleScreen = Content.Load<Texture2D>("Images/asteroidsTitle");
+            textFont = Content.Load<SpriteFont>("Fonts/TextFont");
+            introSound = Content.Load<SoundEffect>("Sounds/introMusic");
+            gameSound = Content.Load<SoundEffect>("Sounds/mainMusic");
+            winSound = Content.Load<SoundEffect>("Sounds/winSound");
+            loseSound = Content.Load<SoundEffect>("Sounds/loseSound");
+            explodeSound = Content.Load<SoundEffect>("Sounds/explodeSound");
+            introSoundInstance = introSound.CreateInstance();
+            introSoundInstance.IsLooped = true;
+            gameSoundInstance = gameSound.CreateInstance();
+            gameSoundInstance.IsLooped = true;
+            winSoundInstance = winSound.CreateInstance();
+            loseSoundInstance = loseSound.CreateInstance();
+            explodeSoundInstance = explodeSound.CreateInstance();
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -137,13 +156,28 @@ namespace Asteroids_Final_game
 
             if (screen == Screen.Title)
             {
+                introSoundInstance.Play();
                 if (keyboardState.IsKeyDown(Keys.Space))
+                {
+                    screen = Screen.Game;
+                }
+                if (optionsRect.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    screen = Screen.Options;
+                }
+
+            }
+            if (screen == Screen.Options)
+            {
+                if (keyboardState.IsKeyDown(Keys.Enter))
                 {
                     screen = Screen.Game;
                 }
             }
             if (screen == Screen.Game)
             {
+                introSoundInstance.Stop();
+                gameSoundInstance.Play();
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
                     particleSystem.EmitterLocation = new Vector2(ship.Rect.X + (ship.Rect.Width / 2), ship.Rect.Y + (ship.Rect.Height / 2));
@@ -173,6 +207,9 @@ namespace Asteroids_Final_game
                     }
                     if (removeLaser)
                     {
+                        explodeSound.Play();
+
+
                         lasers.RemoveAt(i);
                         i--;
                     }
@@ -212,8 +249,25 @@ namespace Asteroids_Final_game
 
 
             }
+            if (screen == Screen.Win)
+            {
+                gameSoundInstance.Stop();
+                winSoundInstance.Play();
+                if (keyboardState.IsKeyDown(Keys.Enter))
+                {
+                    screen = Screen.Title;
+                }
+            }
+            if (screen == Screen.Lose)
+            {
+                gameSoundInstance.Stop();
+                loseSoundInstance.Play();
+                if (keyboardState.IsKeyDown(Keys.Enter))
+                {
+                    screen = Screen.Title;
+                }
+            }
 
-            
             // TODO: Add your update logic here
             prevMouseState = mouseState;
             base.Update(gameTime);
@@ -222,13 +276,42 @@ namespace Asteroids_Final_game
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
+            Vector2 GetVirtualMousePosition()
+            {
+                var mouse = Mouse.GetState();
 
+                Vector2 screenPos = new Vector2(mouse.X, mouse.Y);
+
+                // Remove letterbox offset
+                //screenPos -= _screenOffset;
+
+                // Un-scale
+                screenPos /= scale;
+
+                return screenPos;
+            }
+            Vector2 mousePos = GetVirtualMousePosition();
 
             _spriteBatch.Begin(transformMatrix: scaleMatrix);
 
             if (screen == Screen.Title)
             {
+
                 _spriteBatch.Draw(titleScreen, virtualRect, Color.White);
+                
+                if (optionsRect.Contains(mousePos))
+                {
+                    _spriteBatch.Draw(optionsTexture, new Rectangle(8, 8, 34, 34), Color.Turquoise);
+                }
+                _spriteBatch.Draw(optionsTexture, new Rectangle(10, 10, 30, 30), Color.White);
+            }
+            if (screen == Screen.Options)
+            {
+                _spriteBatch.DrawString(textFont, "Left Click", new Vector2(100, 200), Color.White);
+                _spriteBatch.DrawString(textFont, "Boosters", new Vector2(100, 250), Color.White);
+                _spriteBatch.DrawString(textFont, "Right Click", new Vector2(100, 400), Color.White);
+                _spriteBatch.DrawString(textFont, "Lasers", new Vector2(100, 450), Color.White);
+                _spriteBatch.DrawString(textFont, "ENTER to start", new Vector2(100, 50), Color.White);
             }
             if (screen == Screen.Game)
             {
@@ -247,8 +330,21 @@ namespace Asteroids_Final_game
                     asteroids[i].Draw(_spriteBatch);
                 }
             }
-            
-            
+            if(screen == Screen.Win)
+            {
+                _spriteBatch.DrawString(textFont, "YOU WIN!", new Vector2(308, 248), Color.DarkGoldenrod);
+                _spriteBatch.DrawString(textFont, "YOU WIN!", new Vector2(312, 252), Color.Yellow);
+                _spriteBatch.DrawString(textFont, "YOU WIN!", new Vector2(310, 250), Color.Gold);
+                
+
+            }
+            if (screen == Screen.Lose)
+            {
+                _spriteBatch.DrawString(textFont, "you lose...", new Vector2(310, 250), Color.White);
+
+                _spriteBatch.DrawString(textFont, "Try Again", new Vector2(310, 450), Color.White);
+
+            }
             _spriteBatch.End();
 
 
